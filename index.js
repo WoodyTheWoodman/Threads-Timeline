@@ -1,8 +1,9 @@
 var app = require('app');  // Module to control application life.
 var BrowserWindow = require('browser-window');  // Module to create native browser window.
+var ipc = require('ipc');
 
 // Report crashes to our server.
-require('crash-reporter').start();
+//require('crash-reporter').start();
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is GCed.
@@ -29,6 +30,21 @@ app.on('ready', function() {
   // Open the devtools.
   mainWindow.openDevTools();
 
+  // New browser window for the Electron > Prefs menu
+  var prefsWindow = new BrowserWindow({
+    width: 400,
+    height: 400,
+    show: false // hide it by default
+  });
+  prefsWindow.loadUrl('file://' + __dirname + '/prefs.html');
+
+  ipc.on('toggle-prefs', function() {
+    if(prefsWindow.isVisible())
+      prefsWindow.hide();
+    else
+      prefsWindow.show();
+  });
+  
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
     // Dereference the window object, usually you would store windows
